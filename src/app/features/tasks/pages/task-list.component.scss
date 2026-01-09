@@ -1,235 +1,472 @@
-ion-header {
-  ion-toolbar {
-    --background: linear-gradient(
-      135deg,
-      var(--ion-color-primary) 0%,
-      var(--ion-color-tertiary) 100%
-    );
-    --color: white;
-    padding-top: 8px;
-  }
+/* src/app/features/tasks/pages/task-list.component.scss */
 
-  .header-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 600;
-    font-size: 1.4rem;
+/* =====================================================
+   Variables y Mixins
+===================================================== */
+$primary-gradient: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-tertiary) 100%);
+$card-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+$card-shadow-hover: 0 4px 24px rgba(0, 0, 0, 0.12);
+$border-radius: 16px;
+$border-radius-large: 20px;
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
 
-    .header-icon {
-      font-size: 32px;
-      color: var(--ion-color-secondary);
-    }
-  }
-
-  .stats-toolbar {
-    --background: linear-gradient(
-      135deg,
-      var(--ion-color-primary) 0%,
-      var(--ion-color-tertiary) 100%
-    );
-    --min-height: 70px;
-    padding: 12px 16px;
-  }
-
-  .stats-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    background: rgba(255, 255, 255, 0.12);
-    padding: 14px;
-    border-radius: 16px;
-    backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-  }
-
-  .stat-number {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: white;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.85);
-    margin-top: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .stat-divider {
-    width: 1px;
-    height: 32px;
-    background: rgba(255, 255, 255, 0.3);
-  }
-}
-
-ion-content {
-  --background: linear-gradient(to bottom, #f5f7fa 0%, #e8ecf1 100%);
-}
-
-.content-wrapper {
-  padding: 16px;
-  padding-bottom: 32px;
-}
-
-.input-card {
-  border-radius: 20px;
+@mixin card-base {
   background: #ffffff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 8px;
+  border-radius: $border-radius;
+  box-shadow: $card-shadow;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.input-container {
+@mixin flex-center {
   display: flex;
-  gap: 12px;
   align-items: center;
 }
 
-.task-input {
+/* =====================================================
+   Header
+===================================================== */
+ion-header {
+  ion-toolbar {
+    --background: #{$primary-gradient};
+    --color: white;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    --min-height: 80px;
+  }
+}
+
+.header-content {
+  @include flex-center;
+  gap: $spacing-md;
+  padding: $spacing-xs 0;
+}
+
+.logo-container {
+  @include flex-center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(253, 218, 36, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+
+  ion-icon {
+    font-size: 32px;
+    color: var(--ion-color-secondary);
+  }
+}
+
+.title-wrapper {
   flex: 1;
-  font-size: 1rem;
-  font-weight: 500;
-}
 
-.add-button {
-  --background: var(--ion-color-secondary);
-  height: 44px;
-  width: 44px;
-  border-radius: 50%;
-  box-shadow: 0 3px 8px rgba(253, 218, 36, 0.4);
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: scale(1.05);
+  .main-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
   }
 
-  &:active {
-    transform: scale(0.95);
+  .subtitle {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
   }
 }
 
-.empty-state {
+/* =====================================================
+   Content
+===================================================== */
+ion-content {
+  --background: #f8f9fa;
+}
+
+.content-container {
+  padding: $spacing-lg $spacing-md $spacing-xl;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* =====================================================
+   Stats Grid
+===================================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.stat-card {
+  @include card-base;
+  padding: $spacing-md;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: $spacing-sm;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--stat-color, var(--ion-color-primary));
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $card-shadow-hover;
+  }
+}
+
+.stat-total {
+  --stat-color: var(--ion-color-primary);
+}
+
+.stat-pending {
+  --stat-color: var(--ion-color-secondary);
+}
+
+.stat-completed {
+  --stat-color: var(--ion-color-success);
+}
+
+.stat-icon-wrapper {
+  @include flex-center;
   justify-content: center;
-  padding: 60px 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(0, 72, 132, 0.1), rgba(0, 49, 92, 0.05));
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--stat-color, var(--ion-color-primary));
+  }
+}
+
+.stat-info {
   text-align: center;
 
-  .empty-icon {
-    font-size: 80px;
-    color: var(--ion-color-primary);
-    opacity: 0.25;
-    margin-bottom: 16px;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
+  .stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
     color: var(--ion-color-dark);
-    margin-bottom: 4px;
+    line-height: 1;
   }
 
-  p {
-    font-size: 1rem;
+  .stat-label {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     color: var(--ion-color-medium);
+  }
+}
+
+/* =====================================================
+   Quick Add Section
+===================================================== */
+.quick-add-section {
+  margin-bottom: $spacing-xl;
+}
+
+.section-title {
+  @include flex-center;
+  gap: $spacing-xs;
+  margin: 0 0 $spacing-md;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+.quick-add-card {
+  @include card-base;
+  padding: $spacing-lg;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.input-wrapper,
+.category-selector {
+  @include flex-center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    background: white;
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 4px rgba(0, 72, 132, 0.1);
+  }
+}
+
+.input-icon {
+  font-size: 20px;
+  color: var(--ion-color-medium);
+  flex-shrink: 0;
+}
+
+.task-input,
+.category-select {
+  --padding-start: 0;
+  --padding-end: 0;
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.add-task-button {
+  --background: #{$primary-gradient};
+  --border-radius: 12px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.3px;
+
+  &:hover:not([disabled]) {
+    --background: linear-gradient(135deg, var(--ion-color-primary-shade) 0%, var(--ion-color-primary) 100%);
+  }
+}
+
+/* =====================================================
+   Empty State
+===================================================== */
+.empty-state {
+  text-align: center;
+  padding: $spacing-xl $spacing-lg;
+  margin: $spacing-xl 0;
+}
+
+.empty-illustration {
+  @include flex-center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto $spacing-lg;
+  background: linear-gradient(135deg, rgba(0, 72, 132, 0.08), rgba(0, 49, 92, 0.04));
+  border-radius: 50%;
+
+  ion-icon {
+    font-size: 64px;
+    color: var(--ion-color-primary);
+    opacity: 0.3;
+  }
+}
+
+.empty-title {
+  margin: 0 0 $spacing-xs;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+.empty-message {
+  margin: 0 0 $spacing-lg;
+  font-size: 0.95rem;
+  color: var(--ion-color-medium);
+  line-height: 1.5;
+}
+
+.empty-action {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  text-transform: none;
+  font-weight: 600;
+}
+
+/* =====================================================
+   Tasks Sections
+===================================================== */
+.tasks-container {
+  margin-top: $spacing-lg;
+}
+
+.tasks-section {
+  margin-bottom: $spacing-xl;
+
+  &.completed-section {
+    .task-card {
+      background: #fafbfc;
+    }
   }
 }
 
 .section-header {
-  display: flex;
+  @include flex-center;
   justify-content: space-between;
-  align-items: center;
-  margin: 24px 0 12px 0;
+  margin-bottom: $spacing-md;
+}
 
-  h3 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--ion-color-dark);
+.section-title-wrapper {
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+.section-icon {
+  @include flex-center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  &.pending-icon {
+    background: linear-gradient(135deg, rgba(253, 218, 36, 0.15), rgba(253, 218, 36, 0.05));
 
     ion-icon {
-      font-size: 1.4rem;
-      color: var(--ion-color-primary);
+      color: #dfc020;
     }
   }
 
-  &.completed-header h3 ion-icon {
-    color: var(--ion-color-success);
-  }
+  &.completed-icon {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
 
-  .clear-button {
-    font-size: 0.85rem;
-    text-transform: none;
-    --color: var(--ion-color-medium);
+    ion-icon {
+      color: var(--ion-color-success);
+    }
   }
 }
 
-.task-item {
-  --background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  margin-bottom: 12px;
-  transition: transform 0.2s ease;
-}
-
-.task-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-}
-
-.task-checkbox {
-  --border-color: var(--ion-color-primary);
-  --background-checked: var(--ion-color-primary);
-  --size: 24px;
-}
-
-.task-label {
-  flex: 1;
-  font-size: 1rem;
-  font-weight: 500;
+.section-title-main {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--ion-color-dark);
-
-  &.completed {
-    color: var(--ion-color-medium);
-    text-decoration: line-through;
-    background: #f0f2f5;
-    border-radius: 8px;
-    padding: 4px 8px;
-  }
 }
 
-.delete-button {
+.section-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
+
+.clear-all-btn {
   --color: var(--ion-color-danger);
-  opacity: 0.7;
-  transition: all 0.2s ease;
+  text-transform: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* =====================================================
+   Task Cards
+===================================================== */
+.tasks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.task-sliding {
+  border-radius: $border-radius;
+  overflow: hidden;
+}
+
+.task-card {
+  @include card-base;
+  --background: white;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin: 0;
 
   &:hover {
+    transform: translateX(4px);
+    box-shadow: $card-shadow-hover;
+  }
+}
+
+.task-wrapper {
+  @include flex-center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  width: 100%;
+}
+
+.custom-checkbox {
+  --size: 24px;
+  --border-radius: 8px;
+  --border-width: 2px;
+  --border-color: var(--ion-color-primary);
+  --border-color-checked: var(--ion-color-primary);
+  --background-checked: var(--ion-color-primary);
+  --checkmark-color: white;
+  flex-shrink: 0;
+}
+
+.task-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  line-height: 1.4;
+  word-wrap: break-word;
+
+  &.completed-title {
+    color: var(--ion-color-medium);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+}
+
+.task-delete-btn {
+  --color: var(--ion-color-medium);
+  --padding-start: 8px;
+  --padding-end: 8px;
+  flex-shrink: 0;
+  opacity: 0.6;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    --color: var(--ion-color-danger);
     opacity: 1;
   }
 }
 
-.completed-list .task-item {
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
+/* =====================================================
+   Animaciones
+===================================================== */
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -237,9 +474,81 @@ ion-content {
   }
 }
 
+.task-card {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card {
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @for $i from 1 through 3 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}
+
+/* =====================================================
+   Responsive Design
+===================================================== */
+@media (max-width: 576px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: $spacing-xs;
+  }
+
+  .stat-card {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: $spacing-sm;
+
+    &::before {
+      width: 3px;
+      height: 100%;
+    }
+  }
+
+  .stat-info {
+    text-align: left;
+
+    .stat-value {
+      font-size: 1.5rem;
+    }
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  .clear-all-btn {
+    align-self: flex-end;
+  }
+}
+
 @media (min-width: 768px) {
-  .content-wrapper {
-    max-width: 700px;
-    margin: 0 auto;
+  .content-container {
+    padding: $spacing-xl $spacing-lg;
+  }
+
+  .stats-grid {
+    gap: $spacing-md;
+  }
+
+  .quick-add-card {
+    padding: $spacing-xl;
+  }
+
+  .input-group {
+    flex-direction: row;
+  }
+
+  .input-wrapper {
+    flex: 2;
+  }
+
+  .category-selector {
+    flex: 1;
   }
 }
