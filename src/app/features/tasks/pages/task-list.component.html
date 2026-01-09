@@ -1,3 +1,146 @@
-<p>
-  task-list works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <div class="header-content">
+        <ion-icon name="briefcase-outline" class="header-icon"></ion-icon>
+        <div class="title-text">
+          <span class="app-name">Task</span>
+          <span class="brand-name">Manager</span>
+        </div>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar class="stats-toolbar">
+    <div class="stats-container">
+      <div class="stat-item">
+        <span class="stat-number">{{ tasks().length }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ completedCount() }}</span>
+        <span class="stat-label">Done</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ pendingCount() }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-wrapper">
+    <div class="input-section">
+      <ion-card class="input-card">
+        <ion-card-header>
+          <ion-card-title class="input-title">
+            <ion-icon name="create-outline"></ion-icon>
+            New Task
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="input-container">
+            <ion-input
+              placeholder="What do you need to do?"
+              type="text"
+              [formControl]="taskControl"
+              (keyup.enter)="submit()"
+              class="task-input"
+            ></ion-input>
+            <ion-button (click)="submit()" [disabled]="taskControl.invalid" class="add-button">
+              <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="tasks-section">
+      @if (tasks().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="clipboard-outline" class="empty-icon"></ion-icon>
+        <h2>No tasks yet</h2>
+        <p>Add your first task to get started!</p>
+      </div>
+      } @else {
+      <!-- Pending Tasks -->
+      @if (pendingTasks().length > 0) {
+      <div class="section-header">
+        <h3>
+          <ion-icon name="time-outline"></ion-icon>
+          Pending
+        </h3>
+      </div>
+      <ion-list class="tasks-list" lines="none">
+        @for (task of pendingTasks(); track task.id) {
+        <ion-item-sliding>
+          <ion-item class="task-item">
+            <div class="task-content">
+              <ion-checkbox
+                slot="start"
+                [checked]="task.completed"
+                (ionChange)="toggleTask(task.id)"
+                class="task-checkbox"
+              ></ion-checkbox>
+              <ion-label class="task-label">
+                {{ task.title }}
+              </ion-label>
+            </div>
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="deleteTask(task.id)"
+              class="delete-button"
+            >
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-item-sliding>
+        }
+      </ion-list>
+      } @if (completedTasks().length > 0) {
+      <div class="section-header completed-header">
+        <h3>
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          Completed
+        </h3>
+        <ion-button fill="clear" size="small" (click)="clearCompleted()" class="clear-button">
+          Clear all
+        </ion-button>
+      </div>
+      <ion-list class="tasks-list completed-list" lines="none">
+        @for (task of completedTasks(); track task.id) {
+        <ion-item-sliding>
+          <ion-item class="task-item completed-task">
+            <div class="task-content">
+              <ion-checkbox
+                slot="start"
+                [checked]="task.completed"
+                (ionChange)="toggleTask(task.id)"
+                class="task-checkbox"
+              ></ion-checkbox>
+              <ion-label class="task-label completed">
+                {{ task.title }}
+              </ion-label>
+            </div>
+            <ion-button
+              fill="clear"
+              color="danger"
+              slot="end"
+              (click)="deleteTask(task.id)"
+              class="delete-button"
+            >
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-item-sliding>
+        }
+      </ion-list>
+      } }
+    </div>
+  </div>
+</ion-content>
