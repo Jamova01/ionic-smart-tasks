@@ -1,4 +1,3 @@
-<!-- src/app/features/tasks/pages/task-list.component.html -->
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>
@@ -295,10 +294,12 @@
     <!-- Tasks Display -->
     <div class="tasks-container">
       @if (filteredTasks().length === 0) {
+      <!-- EMPTY STATE -->
       <div class="empty-state">
         <div class="empty-illustration">
           <ion-icon name="checkmark-done-outline"></ion-icon>
         </div>
+
         @if (selectedCategoryFilter()) {
         <h3 class="empty-title">No tasks in this category</h3>
         <p class="empty-message">
@@ -319,7 +320,7 @@
         }
       </div>
       } @else {
-      <!-- Pending Tasks Section -->
+      <!-- PENDING TASKS -->
       @if (pendingTasks().length > 0) {
       <div class="tasks-section">
         <div class="section-header">
@@ -338,48 +339,20 @@
 
         <div class="tasks-grid">
           @for (task of pendingTasks(); track task.id) {
-          <ion-item-sliding #slidingItem class="task-sliding">
-            <ion-item-options side="end">
-              <ion-item-option color="danger" (click)="deleteTask(task.id); slidingItem.close()">
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
-
-            <ion-item lines="none" class="task-card pending-task">
-              <div class="task-wrapper">
-                <ion-checkbox
-                  [checked]="task.completed"
-                  (ionChange)="toggleTask(task.id)"
-                  class="custom-checkbox"
-                ></ion-checkbox>
-
-                <div class="task-details">
-                  <p class="task-title">{{ task.title }}</p>
-                  <span
-                    class="task-category-badge"
-                    [style.background]="getCategoryById(task.categoryId)?.color"
-                  >
-                    {{ getCategoryById(task.categoryId)?.name }}
-                  </span>
-                </div>
-
-                <ion-button
-                  fill="clear"
-                  size="small"
-                  (click)="deleteTask(task.id)"
-                  class="task-delete-btn"
-                >
-                  <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                </ion-button>
-              </div>
-            </ion-item>
-          </ion-item-sliding>
+          <app-task-item
+            [task]="task"
+            variant="pending"
+            [categoryName]="getCategoryById(task.categoryId)?.name"
+            [categoryColor]="getCategoryById(task.categoryId)?.color"
+            (toggle)="toggleTask($event)"
+            (delete)="deleteTask($event)"
+          />
           }
         </div>
       </div>
       }
 
-      <!-- Completed Tasks Section -->
+      <!-- COMPLETED TASKS -->
       @if (completedTasks().length > 0) {
       <div class="tasks-section completed-section">
         <div class="section-header">
@@ -403,42 +376,14 @@
 
         <div class="tasks-grid">
           @for (task of completedTasks(); track task.id) {
-          <ion-item-sliding #slidingItem class="task-sliding">
-            <ion-item-options side="end">
-              <ion-item-option color="danger" (click)="deleteTask(task.id); slidingItem.close()">
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
-
-            <ion-item lines="none" class="task-card completed-task">
-              <div class="task-wrapper">
-                <ion-checkbox
-                  [checked]="task.completed"
-                  (ionChange)="toggleTask(task.id)"
-                  class="custom-checkbox"
-                ></ion-checkbox>
-
-                <div class="task-details">
-                  <p class="task-title completed-title">{{ task.title }}</p>
-                  <span
-                    class="task-category-badge"
-                    [style.background]="getCategoryById(task.categoryId)?.color"
-                  >
-                    {{ getCategoryById(task.categoryId)?.name }}
-                  </span>
-                </div>
-
-                <ion-button
-                  fill="clear"
-                  size="small"
-                  (click)="deleteTask(task.id)"
-                  class="task-delete-btn"
-                >
-                  <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                </ion-button>
-              </div>
-            </ion-item>
-          </ion-item-sliding>
+          <app-task-item
+            [task]="task"
+            variant="completed"
+            [categoryName]="getCategoryById(task.categoryId)?.name"
+            [categoryColor]="getCategoryById(task.categoryId)?.color"
+            (toggle)="toggleTask($event)"
+            (delete)="deleteTask($event)"
+          />
           }
         </div>
       </div>
