@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Task } from '../../../core/models/task.model';
 import { StorageService } from '../../../core/storage/storage';
 
@@ -7,6 +7,8 @@ const TASKS_KEY = 'tasks';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
+  private readonly storage: StorageService = inject(StorageService);
+
   readonly tasks = signal<Task[]>([]);
 
   readonly completedTasks = computed(() => this.tasks().filter((t) => t.completed));
@@ -14,7 +16,7 @@ export class TaskService {
   readonly completedCount = computed(() => this.completedTasks().length);
   readonly pendingCount = computed(() => this.pendingTasks().length);
 
-  constructor(private storage: StorageService) {
+  constructor() {
     this.loadTasks();
   }
 
@@ -23,7 +25,7 @@ export class TaskService {
     this.tasks.set(storedTasks ?? []);
   }
 
-  async addTask(title: string): Promise<void> {
+  async addTask(title: string, categoryId: string): Promise<void> {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) return;
 
@@ -31,6 +33,7 @@ export class TaskService {
       id: uuidv4(),
       title: trimmedTitle,
       completed: false,
+      categoryId,
       createdAt: Date.now(),
     };
 
