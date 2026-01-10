@@ -1,0 +1,114 @@
+/* =====================================================
+   Variables y Mixins
+===================================================== */
+$primary-gradient: linear-gradient(
+  135deg,
+  var(--ion-color-primary) 0%,
+  var(--ion-color-tertiary) 100%
+);
+$card-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+$card-shadow-hover: 0 4px 24px rgba(0, 0, 0, 0.12);
+$border-radius: 16px;
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+@mixin card-base {
+  background: #ffffff;
+  border-radius: $border-radius;
+  box-shadow: $card-shadow;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+.task-card {
+  @include card-base;
+  --background: white;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin: 0;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: $card-shadow-hover;
+  }
+}
+
+/* Wrapper */
+.task-wrapper {
+  @include flex-center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  width: 100%;
+
+  /* CLAVE */
+  align-items: flex-start;
+}
+
+
+/* Checkbox */
+.custom-checkbox {
+  --size: 24px;
+  --border-radius: 8px;
+  --border-width: 2px;
+  --border-color: var(--ion-color-primary);
+  --border-color-checked: var(--ion-color-primary);
+  --background-checked: var(--ion-color-primary);
+  --checkmark-color: white;
+
+  /* CLAVE */
+  width: 24px;
+  min-width: 24px;
+  flex: 0 0 24px;
+}
+
+.task-details {
+  flex: 1 1 auto;
+  min-width: 0; // MUY importante para evitar overflow
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+/* Category badge */
+.task-category-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  align-self: flex-start;
+  opacity: 0.9;
+}
+
+.completed-task {
+  background: #fafbfc;
+
+  .task-category-badge {
+    opacity: 0.5;
+  }
+}
+
+/* Animation (local, safe to duplicate) */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,38 @@
+<ion-item-sliding class="task-sliding">
+  <ion-item-options side="end">
+    <ion-item-option color="danger" (click)="onDelete()">
+      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+    </ion-item-option>
+  </ion-item-options>
+
+  <ion-item
+    lines="none"
+    class="task-card"
+    [class.pending-task]="variant === 'pending'"
+    [class.completed-task]="variant === 'completed'"
+  >
+    <div class="task-wrapper">
+      <ion-checkbox
+        [checked]="task.completed"
+        (ionChange)="onToggle()"
+        class="custom-checkbox"
+      ></ion-checkbox>
+
+      <div class="task-details">
+        <p class="task-title" [class.completed-title]="task.completed">
+          {{ task.title }}
+        </p>
+
+        @if (categoryName) {
+        <span class="task-category-badge" [style.background]="categoryColor">
+          {{ categoryName }}
+        </span>
+        }
+      </div>
+
+      <ion-button fill="clear" size="small" (click)="onDelete()" class="task-delete-btn">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-item>
+</ion-item-sliding>
