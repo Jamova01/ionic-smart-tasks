@@ -3,30 +3,27 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   signal,
-  computed,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+
 import {
+  AlertController,
   IonButton,
-  IonCheckbox,
+  IonChip,
   IonContent,
   IonHeader,
   IonIcon,
   IonInput,
-  IonItem,
-  IonItemOption,
-  IonItemOptions,
-  IonItemSliding,
+  IonLabel,
   IonSelect,
   IonSelectOption,
   IonTitle,
   IonToolbar,
-  IonChip,
-  IonLabel,
-  AlertController,
 } from '@ionic/angular/standalone';
+
 import { addIcons } from 'ionicons';
 import {
   addCircleOutline,
@@ -35,23 +32,27 @@ import {
   briefcaseOutline,
   checkmarkCircleOutline,
   checkmarkDoneOutline,
+  chevronDownOutline,
+  chevronUpOutline,
   clipboardOutline,
   closeOutline,
+  colorPaletteOutline,
   createOutline,
+  eyeOutline,
   funnelOutline,
   hourglassOutline,
   listOutline,
   pricetagOutline,
   timeOutline,
   trashOutline,
-  colorPaletteOutline,
-  eyeOutline,
-  chevronDownOutline,
-  chevronUpOutline,
 } from 'ionicons/icons';
+
 import { TaskService } from '../services/task.service';
 import { CategoryService } from '../services/category.service';
+
 import { Task } from '../../../core/models/task.model';
+
+import { TaskItemComponent } from '../components/task-item/task-item.component';
 
 @Component({
   selector: 'app-task-list',
@@ -59,17 +60,13 @@ import { Task } from '../../../core/models/task.model';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    TaskItemComponent,
     IonButton,
-    IonCheckbox,
     IonChip,
     IonContent,
     IonHeader,
     IonIcon,
     IonInput,
-    IonItem,
-    IonItemOption,
-    IonItemOptions,
-    IonItemSliding,
     IonLabel,
     IonSelect,
     IonSelectOption,
@@ -89,8 +86,17 @@ export class TaskListComponent implements OnInit {
   readonly categories = this.categoryService.categories;
 
   readonly selectedCategoryFilter = signal<string | null>(null);
-
   readonly showCategoryForm = signal(false);
+
+  readonly taskControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(1)],
+  });
+
+  readonly categoryControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   readonly categoryNameControl = new FormControl('', {
     nonNullable: true,
@@ -116,32 +122,16 @@ export class TaskListComponent implements OnInit {
   ];
 
   readonly filteredTasks = computed(() => {
-    const allTasks = this.tasks();
-    const categoryFilter = this.selectedCategoryFilter();
-
-    if (!categoryFilter) {
-      return allTasks;
-    }
-
-    return allTasks.filter((task) => task.categoryId === categoryFilter);
+    const filter = this.selectedCategoryFilter();
+    return filter ? this.tasks().filter((t) => t.categoryId === filter) : this.tasks();
   });
 
-  readonly completedTasks = computed(() => this.filteredTasks().filter((task) => task.completed));
+  readonly completedTasks = computed(() => this.filteredTasks().filter((t) => t.completed));
 
-  readonly pendingTasks = computed(() => this.filteredTasks().filter((task) => !task.completed));
+  readonly pendingTasks = computed(() => this.filteredTasks().filter((t) => !t.completed));
 
   readonly completedCount = computed(() => this.completedTasks().length);
   readonly pendingCount = computed(() => this.pendingTasks().length);
-
-  readonly taskControl = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.minLength(1)],
-  });
-
-  readonly categoryControl = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required],
-  });
 
   ngOnInit(): void {
     this.initializeIcons();
@@ -153,16 +143,15 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
-    const taskTitle = this.taskControl.value.trim();
+    const title = this.taskControl.value.trim();
     let categoryId = this.categoryControl.value;
 
     if (!categoryId) {
-      const defaultCategory = this.categories()[0];
-      categoryId = defaultCategory.id;
+      categoryId = this.categories()[0]?.id;
       this.categoryControl.setValue(categoryId);
     }
 
-    this.taskService.addTask(taskTitle, categoryId);
+    this.taskService.addTask(title, categoryId);
     this.resetTaskControl();
   }
 
@@ -190,19 +179,9 @@ export class TaskListComponent implements OnInit {
     return this.selectedCategoryFilter() === categoryId;
   }
 
-  getCategoryById(categoryId: string) {
-    return this.categories().find((cat) => cat.id === categoryId);
-  }
-
-  getTaskCountByCategory(categoryId: string): number {
-    return this.tasks().filter((task) => task.categoryId === categoryId).length;
-  }
-
   toggleCategoryForm(): void {
-    this.showCategoryForm.update((value) => !value);
-    if (!this.showCategoryForm()) {
-      this.resetCategoryForm();
-    }
+    this.showCategoryForm.update((v) => !v);
+    if (!this.showCategoryForm()) this.resetCategoryForm();
   }
 
   createCategory(): void {
@@ -211,37 +190,33 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
-    const name = this.categoryNameControl.value.trim();
-    const color = this.categoryColorControl.value;
+    this.categoryService.addCategory(
+      this.categoryNameControl.value.trim(),
+      this.categoryColorControl.value
+    );
 
-    this.categoryService.addCategory(name, color);
     this.resetCategoryForm();
     this.showCategoryForm.set(false);
   }
 
   async confirmDeleteCategory(categoryId: string): Promise<void> {
     const category = this.getCategoryById(categoryId);
-    const tasksInCategory = this.getTaskCountByCategory(categoryId);
+    const count = this.getTaskCountByCategory(categoryId);
 
     const alert = await this.alertController.create({
       header: 'Delete Category',
       message:
-        tasksInCategory > 0
+        count > 0
           ? `Are you sure you want to delete "${
               category?.name
-            }"? This will also delete ${tasksInCategory} task${tasksInCategory !== 1 ? 's' : ''}.`
+            }"? This will also delete ${count} task${count !== 1 ? 's' : ''}.`
           : `Are you sure you want to delete "${category?.name}"?`,
       buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
+        { text: 'Cancel', role: 'cancel' },
         {
           text: 'Delete',
           role: 'destructive',
-          handler: () => {
-            this.deleteCategory(categoryId);
-          },
+          handler: () => this.deleteCategory(categoryId),
         },
       ],
     });
@@ -250,11 +225,16 @@ export class TaskListComponent implements OnInit {
   }
 
   deleteCategory(categoryId: string): void {
-    if (this.selectedCategoryFilter() === categoryId) {
-      this.clearFilter();
-    }
-
+    if (this.selectedCategoryFilter() === categoryId) this.clearFilter();
     this.categoryService.deleteCategory(categoryId);
+  }
+
+  getCategoryById(categoryId: string) {
+    return this.categories().find((c) => c.id === categoryId);
+  }
+
+  getTaskCountByCategory(categoryId: string): number {
+    return this.tasks().filter((t) => t.categoryId === categoryId).length;
   }
 
   selectColor(color: string): void {
