@@ -25,8 +25,6 @@ import {
   IonToolbar,
   IonChip,
   IonLabel,
-  IonModal,
-  IonButtons,
   AlertController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -48,6 +46,8 @@ import {
   trashOutline,
   colorPaletteOutline,
   eyeOutline,
+  chevronDownOutline,
+  chevronUpOutline,
 } from 'ionicons/icons';
 import { TaskService } from '../services/task.service';
 import { CategoryService } from '../services/category.service';
@@ -60,7 +60,6 @@ import { Task } from '../../../core/models/task.model';
     CommonModule,
     ReactiveFormsModule,
     IonButton,
-    IonButtons,
     IonCheckbox,
     IonChip,
     IonContent,
@@ -72,7 +71,6 @@ import { Task } from '../../../core/models/task.model';
     IonItemOptions,
     IonItemSliding,
     IonLabel,
-    IonModal,
     IonSelect,
     IonSelectOption,
     IonTitle,
@@ -92,7 +90,7 @@ export class TaskListComponent implements OnInit {
 
   readonly selectedCategoryFilter = signal<string | null>(null);
 
-  readonly isCategoryModalOpen = signal(false);
+  readonly showCategoryForm = signal(false);
 
   readonly categoryNameControl = new FormControl('', {
     nonNullable: true,
@@ -105,16 +103,16 @@ export class TaskListComponent implements OnInit {
   });
 
   readonly predefinedColors = [
-    '#004884', // Primary blue
-    '#fdda24', // Yellow
-    '#00315c', // Dark blue
-    '#10b981', // Green
-    '#ef4444', // Red
-    '#f59e0b', // Orange
-    '#8b5cf6', // Purple
-    '#ec4899', // Pink
-    '#06b6d4', // Cyan
-    '#6366f1', // Indigo
+    '#004884',
+    '#fdda24',
+    '#00315c',
+    '#10b981',
+    '#ef4444',
+    '#f59e0b',
+    '#8b5cf6',
+    '#ec4899',
+    '#06b6d4',
+    '#6366f1',
   ];
 
   readonly filteredTasks = computed(() => {
@@ -200,16 +198,14 @@ export class TaskListComponent implements OnInit {
     return this.tasks().filter((task) => task.categoryId === categoryId).length;
   }
 
-  openCategoryModal(): void {
-    this.isCategoryModalOpen.set(true);
+  toggleCategoryForm(): void {
+    this.showCategoryForm.update((value) => !value);
+    if (!this.showCategoryForm()) {
+      this.resetCategoryForm();
+    }
   }
 
-  closeCategoryModal(): void {
-    this.isCategoryModalOpen.set(false);
-    this.resetCategoryForm();
-  }
-
-  async createCategory(): Promise<void> {
+  createCategory(): void {
     if (this.categoryNameControl.invalid) {
       this.categoryNameControl.markAsTouched();
       return;
@@ -219,7 +215,8 @@ export class TaskListComponent implements OnInit {
     const color = this.categoryColorControl.value;
 
     this.categoryService.addCategory(name, color);
-    this.closeCategoryModal();
+    this.resetCategoryForm();
+    this.showCategoryForm.set(false);
   }
 
   async confirmDeleteCategory(categoryId: string): Promise<void> {
@@ -290,6 +287,8 @@ export class TaskListComponent implements OnInit {
       'checkmark-circle-outline': checkmarkCircleOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
       'checkmark-outline': checkmarkCircleOutline,
+      'chevron-down-outline': chevronDownOutline,
+      'chevron-up-outline': chevronUpOutline,
       'clipboard-outline': clipboardOutline,
       'close-outline': closeOutline,
       'color-palette-outline': colorPaletteOutline,
