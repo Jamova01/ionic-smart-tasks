@@ -1,3 +1,4 @@
+<!-- src/app/features/tasks/pages/task-list.component.html -->
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>
@@ -59,14 +60,110 @@
         <ion-button
           fill="solid"
           size="small"
-          (click)="openCategoryModal()"
-          class="create-category-btn"
+          (click)="toggleCategoryForm()"
+          class="toggle-form-btn"
         >
-          <ion-icon slot="start" name="add-outline"></ion-icon>
-          New Category
+          <ion-icon
+            slot="start"
+            [name]="showCategoryForm() ? 'chevron-up-outline' : 'add-outline'"
+          ></ion-icon>
+          {{ showCategoryForm() ? 'Hide Form' : 'New Category' }}
         </ion-button>
       </div>
 
+      <!-- Inline Category Creation Form -->
+      @if (showCategoryForm()) {
+      <div class="category-form-card">
+        <h3 class="form-title">
+          <ion-icon name="create-outline"></ion-icon>
+          Create New Category
+        </h3>
+
+        <div class="form-content">
+          <!-- Category Name -->
+          <div class="form-row">
+            <label class="form-label">
+              <ion-icon name="pricetag-outline"></ion-icon>
+              Category Name
+            </label>
+            <div class="input-wrapper-inline">
+              <ion-input
+                type="text"
+                placeholder="e.g., Work, Personal, Shopping"
+                [formControl]="categoryNameControl"
+                class="category-name-input"
+              ></ion-input>
+            </div>
+            @if (categoryNameControl.invalid && categoryNameControl.touched) {
+            <p class="error-message">Category name must be at least 2 characters</p>
+            }
+          </div>
+
+          <!-- Color Picker -->
+          <div class="form-row">
+            <label class="form-label">
+              <ion-icon name="color-palette-outline"></ion-icon>
+              Color
+            </label>
+            <div class="color-picker-inline">
+              @for (color of predefinedColors; track color) {
+              <div
+                class="color-dot"
+                [class.selected]="categoryColorControl.value === color"
+                [style.background]="color"
+                (click)="selectColor(color)"
+              >
+                @if (categoryColorControl.value === color) {
+                <ion-icon name="checkmark-outline"></ion-icon>
+                }
+              </div>
+              }
+              <input
+                type="color"
+                [formControl]="categoryColorControl"
+                class="color-input-inline"
+                title="Custom color"
+              />
+            </div>
+          </div>
+
+          <!-- Preview & Actions -->
+          <div class="form-row form-actions">
+            <div class="preview-inline">
+              <span class="preview-label">Preview:</span>
+              <ion-chip
+                class="preview-chip-inline"
+                [style.--chip-color]="categoryColorControl.value"
+              >
+                <ion-icon name="pricetag-outline"></ion-icon>
+                <ion-label>{{ categoryNameControl.value || 'Category Name' }}</ion-label>
+              </ion-chip>
+            </div>
+            <div class="action-buttons">
+              <ion-button
+                size="small"
+                fill="outline"
+                (click)="toggleCategoryForm()"
+                class="cancel-btn-inline"
+              >
+                Cancel
+              </ion-button>
+              <ion-button
+                size="small"
+                (click)="createCategory()"
+                [disabled]="categoryNameControl.invalid"
+                class="create-btn-inline"
+              >
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                Create
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Categories Grid -->
       <div class="categories-management-grid">
         @for (category of categories(); track category.id) {
         <div class="category-card" [style.--category-color]="category.color">
@@ -349,106 +446,3 @@
     </div>
   </div>
 </ion-content>
-
-<!-- Category Creation Modal -->
-<ion-modal [isOpen]="isCategoryModalOpen()" (didDismiss)="closeCategoryModal()">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Create New Category</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeCategoryModal()">
-            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="ion-padding">
-      <div class="modal-content">
-        <!-- Category Name Input -->
-        <div class="form-field">
-          <label class="field-label">
-            <ion-icon name="create-outline"></ion-icon>
-            Category Name
-          </label>
-          <div class="input-wrapper-modal">
-            <ion-input
-              type="text"
-              placeholder="e.g., Work, Personal, Shopping"
-              [formControl]="categoryNameControl"
-              class="modal-input"
-            ></ion-input>
-          </div>
-          @if (categoryNameControl.invalid && categoryNameControl.touched) {
-          <p class="error-message">Category name must be at least 2 characters</p>
-          }
-        </div>
-
-        <!-- Color Picker -->
-        <div class="form-field">
-          <label class="field-label">
-            <ion-icon name="color-palette-outline"></ion-icon>
-            Choose Color
-          </label>
-          <div class="color-picker-grid">
-            @for (color of predefinedColors; track color) {
-            <div
-              class="color-option"
-              [class.selected]="categoryColorControl.value === color"
-              [style.background]="color"
-              (click)="selectColor(color)"
-            >
-              @if (categoryColorControl.value === color) {
-              <ion-icon name="checkmark-outline" class="check-icon"></ion-icon>
-              }
-            </div>
-            }
-          </div>
-
-          <!-- Custom Color Input -->
-          <div class="custom-color-input">
-            <label class="custom-color-label">Or choose custom color:</label>
-            <input type="color" [formControl]="categoryColorControl" class="color-input" />
-            <span class="color-value">{{ categoryColorControl.value }}</span>
-          </div>
-        </div>
-
-        <!-- Preview -->
-        <div class="form-field">
-          <label class="field-label">
-            <ion-icon name="eye-outline"></ion-icon>
-            Preview
-          </label>
-          <div class="category-preview">
-            <ion-chip class="preview-chip" [style.--chip-color]="categoryColorControl.value">
-              <ion-icon name="pricetag-outline"></ion-icon>
-              <ion-label>{{ categoryNameControl.value || 'Category Name' }}</ion-label>
-            </ion-chip>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="modal-actions">
-          <ion-button
-            expand="block"
-            (click)="createCategory()"
-            [disabled]="categoryNameControl.invalid"
-            class="create-btn"
-          >
-            <ion-icon slot="start" name="add-outline"></ion-icon>
-            Create Category
-          </ion-button>
-          <ion-button
-            expand="block"
-            fill="outline"
-            (click)="closeCategoryModal()"
-            class="cancel-btn"
-          >
-            Cancel
-          </ion-button>
-        </div>
-      </div>
-    </ion-content>
-  </ng-template>
-</ion-modal>
