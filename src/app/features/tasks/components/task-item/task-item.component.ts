@@ -5,6 +5,7 @@ import { Task } from '../../../../core/models/task.model';
 
 @Component({
   selector: 'app-task-item',
+  standalone: true,
   imports: [CommonModule, IonicModule],
   templateUrl: './task-item.component.html',
   styleUrls: ['./task-item.component.scss'],
@@ -15,14 +16,14 @@ export class TaskItemComponent {
   categoryColor = input<string>();
   variant = input<'pending' | 'completed'>('pending');
 
-  toogle = output<string>();
-  delete = output<string>();
+  toggle = output<string>();
+  remove = output<string>();
 
   onToggle() {
-    this.toogle.emit(this.task().id);
+    this.toggle.emit(this.task().id);
   }
 
   onDelete() {
-    this.delete.emit(this.task().id);
+    this.remove.emit(this.task().id);
   }
 }

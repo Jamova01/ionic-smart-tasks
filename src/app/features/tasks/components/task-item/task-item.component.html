@@ -8,24 +8,24 @@
   <ion-item
     lines="none"
     class="task-card"
-    [class.pending-task]="variant === 'pending'"
-    [class.completed-task]="variant === 'completed'"
+    [class.pending-task]="variant() === 'pending'"
+    [class.completed-task]="variant() === 'completed'"
   >
     <div class="task-wrapper">
       <ion-checkbox
-        [checked]="task.completed"
+        [checked]="task().completed"
         (ionChange)="onToggle()"
         class="custom-checkbox"
       ></ion-checkbox>
 
       <div class="task-details">
-        <p class="task-title" [class.completed-title]="task.completed">
-          {{ task.title }}
+        <p class="task-title" [class.completed-title]="task().completed">
+          {{ task().title }}
         </p>
 
-        @if (categoryName) {
-        <span class="task-category-badge" [style.background]="categoryColor">
-          {{ categoryName }}
+        @if (categoryName()) {
+        <span class="task-category-badge" [style.background]="categoryColor()">
+          {{ categoryName() }}
         </span>
         }
       </div>

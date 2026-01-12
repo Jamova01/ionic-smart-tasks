@@ -345,7 +345,7 @@
             [categoryName]="getCategoryById(task.categoryId)?.name"
             [categoryColor]="getCategoryById(task.categoryId)?.color"
             (toggle)="toggleTask($event)"
-            (delete)="deleteTask($event)"
+            (remove)="deleteTask($event)"
           />
           }
         </div>
@@ -382,7 +382,7 @@
             [categoryName]="getCategoryById(task.categoryId)?.name"
             [categoryColor]="getCategoryById(task.categoryId)?.color"
             (toggle)="toggleTask($event)"
-            (delete)="deleteTask($event)"
+            (remove)="deleteTask($event)"
           />
           }
         </div>
