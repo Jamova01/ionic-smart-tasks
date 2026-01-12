@@ -53,6 +53,7 @@ import { CategoryService } from '../services/category.service';
 import { Task } from '../../../core/models/task.model';
 
 import { TaskItemComponent } from '../components/task-item/task-item.component';
+import { StatsSummaryComponent } from '../components/stats-summary/stats-summary.component';
 
 @Component({
   selector: 'app-task-list',
@@ -61,6 +62,7 @@ import { TaskItemComponent } from '../components/task-item/task-item.component';
     CommonModule,
     ReactiveFormsModule,
     TaskItemComponent,
+    StatsSummaryComponent,
     IonButton,
     IonChip,
     IonContent,
