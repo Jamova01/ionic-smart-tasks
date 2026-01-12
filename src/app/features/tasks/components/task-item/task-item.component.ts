@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Task } from '../../../../core/models/task.model';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { Task } from '../../../../core/models/task.model';
 
 @Component({
   selector: 'app-task-item',
@@ -10,19 +10,19 @@ import { IonicModule } from '@ionic/angular';
   styleUrls: ['./task-item.component.scss'],
 })
 export class TaskItemComponent {
-  @Input({ required: true }) task!: Task;
-  @Input() categoryName?: string;
-  @Input() categoryColor?: string;
-  @Input() variant: 'pending' | 'completed' = 'pending';
+  task = input.required<Task>();
+  categoryName = input<string>();
+  categoryColor = input<string>();
+  variant = input<'pending' | 'completed'>('pending');
 
-  @Output() toggle = new EventEmitter<string>();
-  @Output() delete = new EventEmitter<string>();
+  toogle = output<string>();
+  delete = output<string>();
 
   onToggle() {
-    this.toggle.emit(this.task.id);
+    this.toogle.emit(this.task().id);
   }
 
   onDelete() {
-    this.delete.emit(this.task.id);
+    this.delete.emit(this.task().id);
   }
 }
