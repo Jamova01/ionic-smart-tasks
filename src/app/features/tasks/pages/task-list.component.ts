@@ -14,14 +14,11 @@ import {
   IonButton,
   IonChip,
   IonContent,
-  IonHeader,
   IonIcon,
   IonInput,
   IonLabel,
   IonSelect,
   IonSelectOption,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -54,6 +51,7 @@ import { Task } from '../../../core/models/task.model';
 
 import { TaskItemComponent } from '../components/task-item/task-item.component';
 import { StatsSummaryComponent } from '../components/stats-summary/stats-summary.component';
+import { TasksHeaderComponent } from '../components/tasks-header/tasks-header.component';
 
 @Component({
   selector: 'app-task-list',
@@ -63,17 +61,15 @@ import { StatsSummaryComponent } from '../components/stats-summary/stats-summary
     ReactiveFormsModule,
     TaskItemComponent,
     StatsSummaryComponent,
+    TasksHeaderComponent,
     IonButton,
     IonChip,
     IonContent,
-    IonHeader,
     IonIcon,
     IonInput,
     IonLabel,
     IonSelect,
     IonSelectOption,
-    IonTitle,
-    IonToolbar,
   ],
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
@@ -268,7 +264,6 @@ export class TaskListComponent implements OnInit {
       'briefcase-outline': briefcaseOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
-      'checkmark-outline': checkmarkCircleOutline,
       'chevron-down-outline': chevronDownOutline,
       'chevron-up-outline': chevronUpOutline,
       'clipboard-outline': clipboardOutline,
