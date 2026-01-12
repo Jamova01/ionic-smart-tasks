@@ -1,8 +1,6 @@
 @use 'theme' as *;
 
-/* =====================================================
-   Header
-===================================================== */
+//  Header
 ion-header {
   ion-toolbar {
     --background: #{$primary-gradient};
