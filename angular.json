@@ -58,7 +58,10 @@
               {
                 "input": "src/theme/variables.css"
               }
-            ]
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src"]
+            }
           },
           "configurations": {
             "production": {
