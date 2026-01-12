@@ -1,0 +1,31 @@
+<div class="stats-grid">
+  <div class="stat-card stat-total">
+    <div class="stat-icon-wrapper">
+      <ion-icon name="list-outline"></ion-icon>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value">{{ total() }}</span>
+      <span class="stat-label">Total Tasks</span>
+    </div>
+  </div>
+
+  <div class="stat-card stat-pending">
+    <div class="stat-icon-wrapper">
+      <ion-icon name="time-outline"></ion-icon>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value">{{ pending() }}</span>
+      <span class="stat-label">Pending</span>
+    </div>
+  </div>
+
+  <div class="stat-card stat-completed">
+    <div class="stat-icon-wrapper">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value">{{ completed() }}</span>
+      <span class="stat-label">Completed</span>
+    </div>
+  </div>
+</div>
