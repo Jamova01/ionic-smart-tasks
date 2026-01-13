@@ -1,6 +1,3 @@
-/* =======================
- * Angular
- * ======================= */
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -10,20 +7,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
-/* =======================
- * Ionic
- * ======================= */
-import {
-  AlertController,
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-} from '@ionic/angular/standalone';
+import { AlertController, IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 
 /* =======================
  * Ionicons
@@ -61,26 +46,24 @@ import { StatsSummaryComponent } from '../components/stats-summary/stats-summary
 import { TasksHeaderComponent } from '../components/tasks-header/tasks-header.component';
 import { CategoryManagementComponent } from '../components/category-management/category-management.component';
 import { TasksFilterComponent } from '../components/tasks-filter/tasks-filter.component';
+import { QuickAddTaskComponent } from '../components/quick-add-task/quick-add-task.component';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
 
     TaskItemComponent,
     StatsSummaryComponent,
     TasksHeaderComponent,
     CategoryManagementComponent,
     TasksFilterComponent,
+    QuickAddTaskComponent,
 
     IonButton,
     IonContent,
     IonIcon,
-    IonInput,
-    IonSelect,
-    IonSelectOption,
   ],
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
@@ -95,16 +78,6 @@ export class TaskListComponent implements OnInit {
   readonly categories = this.categoryService.categories;
 
   readonly selectedCategoryFilter = signal<string | null>(null);
-
-  readonly taskControl = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.minLength(1)],
-  });
-
-  readonly categoryControl = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required],
-  });
 
   readonly vm = computed(() => {
     const tasks = this.tasks();
@@ -128,22 +101,8 @@ export class TaskListComponent implements OnInit {
     this.initializeIcons();
   }
 
-  submit(): void {
-    if (this.taskControl.invalid) {
-      this.taskControl.markAsTouched();
-      return;
-    }
-
-    const title = this.taskControl.value.trim();
-    let categoryId = this.categoryControl.value;
-
-    if (!categoryId) {
-      categoryId = this.categories()[0]?.id;
-      this.categoryControl.setValue(categoryId);
-    }
-
-    this.taskService.addTask(title, categoryId);
-    this.resetTaskControl();
+  onCreateTask(data: { title: string; categoryId: string }): void {
+    this.taskService.addTask(data.title, data.categoryId);
   }
 
   toggleTask(taskId: string): void {
@@ -204,10 +163,6 @@ export class TaskListComponent implements OnInit {
 
   trackByCategoryId(_: number, category: { id: string }): string {
     return category.id;
-  }
-
-  private resetTaskControl(): void {
-    this.taskControl.reset('');
   }
 
   getCategoryById(categoryId: string) {
