@@ -1,0 +1,81 @@
+@use 'theme' as *;
+
+/* =====================================================
+   Section Title (Shared)
+===================================================== */
+.section-title {
+  @include flex-center;
+  gap: $spacing-xs;
+  margin: 0 0 $spacing-md;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+/* =====================================================
+   Category Filter Section
+===================================================== */
+.filter-section {
+  margin-bottom: $spacing-lg;
+}
+
+.filter-header {
+  @include flex-center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.clear-filter-btn {
+  --color: var(--ion-color-danger);
+  text-transform: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.categories-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: $card-shadow;
+}
+
+.filter-chip {
+  --background: #f8f9fa;
+  --color: var(--ion-color-dark);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 18px;
+    margin-right: 4px;
+  }
+
+  &:hover {
+    --background: #e9ecef;
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    --background: var(--chip-color, var(--ion-color-primary));
+    --color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+
+    ion-icon {
+      color: white;
+    }
+  }
+
+  &.all-chip.active {
+    --background: #{$primary-gradient};
+  }
+}

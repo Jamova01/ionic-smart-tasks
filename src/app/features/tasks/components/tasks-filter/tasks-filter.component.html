@@ -1,0 +1,37 @@
+<div class="filter-section">
+  <div class="filter-header">
+    <h2 class="section-title">
+      <ion-icon name="funnel-outline"></ion-icon>
+      Active Filter
+    </h2>
+    @if (hasActiveFilter()) {
+    <ion-button fill="clear" size="small" (click)="clearFilter()" class="clear-filter-btn">
+      <ion-icon slot="start" name="close-outline"></ion-icon>
+      Clear Filter
+    </ion-button>
+    }
+  </div>
+
+  <div class="categories-chips">
+    <ion-chip
+      [class.active]="!hasActiveFilter()"
+      (click)="clearFilter()"
+      class="filter-chip all-chip"
+    >
+      <ion-icon name="list-outline"></ion-icon>
+      <ion-label>All Tasks</ion-label>
+    </ion-chip>
+
+    @for (category of categories(); track category.id) {
+    <ion-chip
+      [class.active]="isFilterActive(category.id)"
+      (click)="filterByCategory(category.id)"
+      class="filter-chip"
+      [style.--chip-color]="category.color"
+    >
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <ion-label>{{ category.name }}</ion-label>
+    </ion-chip>
+    }
+  </div>
+</div>
