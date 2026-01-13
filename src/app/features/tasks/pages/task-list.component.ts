@@ -52,6 +52,7 @@ import { Task } from '../../../core/models/task.model';
 import { TaskItemComponent } from '../components/task-item/task-item.component';
 import { StatsSummaryComponent } from '../components/stats-summary/stats-summary.component';
 import { TasksHeaderComponent } from '../components/tasks-header/tasks-header.component';
+import { CategoryManagementComponent } from '../components/category-management/category-management.component';
 
 @Component({
   selector: 'app-task-list',
@@ -59,9 +60,12 @@ import { TasksHeaderComponent } from '../components/tasks-header/tasks-header.co
   imports: [
     CommonModule,
     ReactiveFormsModule,
+
     TaskItemComponent,
     StatsSummaryComponent,
     TasksHeaderComponent,
+    CategoryManagementComponent,
+
     IonButton,
     IonChip,
     IonContent,
@@ -84,7 +88,6 @@ export class TaskListComponent implements OnInit {
   readonly categories = this.categoryService.categories;
 
   readonly selectedCategoryFilter = signal<string | null>(null);
-  readonly showCategoryForm = signal(false);
 
   readonly taskControl = new FormControl('', {
     nonNullable: true,
@@ -95,29 +98,6 @@ export class TaskListComponent implements OnInit {
     nonNullable: true,
     validators: [Validators.required],
   });
-
-  readonly categoryNameControl = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.minLength(2)],
-  });
-
-  readonly categoryColorControl = new FormControl('#004884', {
-    nonNullable: true,
-    validators: [Validators.required],
-  });
-
-  readonly predefinedColors = [
-    '#004884',
-    '#fdda24',
-    '#00315c',
-    '#10b981',
-    '#ef4444',
-    '#f59e0b',
-    '#8b5cf6',
-    '#ec4899',
-    '#06b6d4',
-    '#6366f1',
-  ];
 
   readonly filteredTasks = computed(() => {
     const filter = this.selectedCategoryFilter();
@@ -177,24 +157,8 @@ export class TaskListComponent implements OnInit {
     return this.selectedCategoryFilter() === categoryId;
   }
 
-  toggleCategoryForm(): void {
-    this.showCategoryForm.update((v) => !v);
-    if (!this.showCategoryForm()) this.resetCategoryForm();
-  }
-
-  createCategory(): void {
-    if (this.categoryNameControl.invalid) {
-      this.categoryNameControl.markAsTouched();
-      return;
-    }
-
-    this.categoryService.addCategory(
-      this.categoryNameControl.value.trim(),
-      this.categoryColorControl.value
-    );
-
-    this.resetCategoryForm();
-    this.showCategoryForm.set(false);
+  createCategory(data: { name: string; color: string }): void {
+    this.categoryService.addCategory(data.name, data.color);
   }
 
   async confirmDeleteCategory(categoryId: string): Promise<void> {
@@ -223,20 +187,10 @@ export class TaskListComponent implements OnInit {
   }
 
   deleteCategory(categoryId: string): void {
-    if (this.selectedCategoryFilter() === categoryId) this.clearFilter();
+    if (this.selectedCategoryFilter() === categoryId) {
+      this.clearFilter();
+    }
     this.categoryService.deleteCategory(categoryId);
-  }
-
-  getCategoryById(categoryId: string) {
-    return this.categories().find((c) => c.id === categoryId);
-  }
-
-  getTaskCountByCategory(categoryId: string): number {
-    return this.tasks().filter((t) => t.categoryId === categoryId).length;
-  }
-
-  selectColor(color: string): void {
-    this.categoryColorControl.setValue(color);
   }
 
   trackById(_: number, task: Task): string {
@@ -247,13 +201,16 @@ export class TaskListComponent implements OnInit {
     return category.id;
   }
 
+  getCategoryById(categoryId: string) {
+    return this.categories().find((c) => c.id === categoryId);
+  }
+
   private resetTaskControl(): void {
     this.taskControl.reset('');
   }
 
-  private resetCategoryForm(): void {
-    this.categoryNameControl.reset('');
-    this.categoryColorControl.reset('#004884');
+  private getTaskCountByCategory(categoryId: string): number {
+    return this.tasks().filter((t) => t.categoryId === categoryId).length;
   }
 
   private initializeIcons(): void {
