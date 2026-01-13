@@ -8,9 +8,9 @@
   <div class="content-container">
     <!-- Stats Cards -->
     <app-stats-summary
-      [total]="filteredTasks().length"
-      [pending]="pendingCount()"
-      [completed]="completedCount()"
+      [total]="vm().filtered.length"
+      [pending]="vm().pendingCount"
+      [completed]="vm().completedCount"
     />
 
     <!-- Category Management Section -->
@@ -19,48 +19,16 @@
       [tasks]="tasks()"
       [activeCategoryId]="selectedCategoryFilter()"
       (create)="createCategory($event)"
-      (filter)="filterByCategory($event)"
+      (filter)="onFilterChange($event)"
       (delete)="confirmDeleteCategory($event)"
     />
 
     <!-- Category Filter -->
-    <div class="filter-section">
-      <div class="filter-header">
-        <h2 class="section-title">
-          <ion-icon name="funnel-outline"></ion-icon>
-          Active Filter
-        </h2>
-        @if (selectedCategoryFilter()) {
-        <ion-button fill="clear" size="small" (click)="clearFilter()" class="clear-filter-btn">
-          <ion-icon slot="start" name="close-outline"></ion-icon>
-          Clear Filter
-        </ion-button>
-        }
-      </div>
-
-      <div class="categories-chips">
-        <ion-chip
-          [class.active]="!selectedCategoryFilter()"
-          (click)="clearFilter()"
-          class="filter-chip all-chip"
-        >
-          <ion-icon name="list-outline"></ion-icon>
-          <ion-label>All Tasks</ion-label>
-        </ion-chip>
-
-        @for (category of categories(); track category.id) {
-        <ion-chip
-          [class.active]="isFilterActive(category.id)"
-          (click)="filterByCategory(category.id)"
-          class="filter-chip"
-          [style.--chip-color]="category.color"
-        >
-          <ion-icon name="pricetag-outline"></ion-icon>
-          <ion-label>{{ category.name }}</ion-label>
-        </ion-chip>
-        }
-      </div>
-    </div>
+    <app-tasks-filter
+      [categories]="categories()"
+      [activeCategoryId]="selectedCategoryFilter()"
+      (filter)="onFilterChange($event)"
+    />
 
     <!-- Quick Add Task -->
     <div class="quick-add-section">
@@ -113,7 +81,7 @@
 
     <!-- Tasks Display -->
     <div class="tasks-container">
-      @if (filteredTasks().length === 0) {
+      @if (vm().filtered.length === 0) {
       <!-- EMPTY STATE -->
       <div class="empty-state">
         <div class="empty-illustration">
@@ -126,7 +94,7 @@
           No tasks found for
           <strong>{{ getCategoryById(selectedCategoryFilter()!)?.name }}</strong>
         </p>
-        <ion-button fill="outline" size="small" class="empty-action" (click)="clearFilter()">
+        <ion-button fill="outline" size="small" class="empty-action" (click)="onFilterChange(null)">
           <ion-icon slot="start" name="close-outline"></ion-icon>
           Clear Filter
         </ion-button>
@@ -141,7 +109,7 @@
       </div>
       } @else {
       <!-- PENDING TASKS -->
-      @if (pendingTasks().length > 0) {
+      @if (vm().pending.length > 0) {
       <div class="tasks-section">
         <div class="section-header">
           <div class="section-title-wrapper">
@@ -151,14 +119,14 @@
             <div>
               <h3 class="section-title-main">In Progress</h3>
               <p class="section-subtitle">
-                {{ pendingCount() }} task{{ pendingCount() !== 1 ? 's' : '' }} to complete
+                {{ vm().pending.length }} task{{ vm().pending.length !== 1 ? 's' : '' }} to complete
               </p>
             </div>
           </div>
         </div>
 
         <div class="tasks-grid">
-          @for (task of pendingTasks(); track task.id) {
+          @for (task of vm().pending; track task.id) {
           <app-task-item
             [task]="task"
             variant="pending"
@@ -173,7 +141,7 @@
       }
 
       <!-- COMPLETED TASKS -->
-      @if (completedTasks().length > 0) {
+      @if (vm().completed.length > 0) {
       <div class="tasks-section completed-section">
         <div class="section-header">
           <div class="section-title-wrapper">
@@ -183,7 +151,7 @@
             <div>
               <h3 class="section-title-main">Completed</h3>
               <p class="section-subtitle">
-                {{ completedCount() }} task{{ completedCount() !== 1 ? 's' : '' }} done
+                {{ vm().completed.length }} task{{ vm().completed.length !== 1 ? 's' : '' }} done
               </p>
             </div>
           </div>
@@ -195,7 +163,7 @@
         </div>
 
         <div class="tasks-grid">
-          @for (task of completedTasks(); track task.id) {
+          @for (task of vm().completed; track task.id) {
           <app-task-item
             [task]="task"
             variant="completed"

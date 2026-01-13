@@ -1,3 +1,6 @@
+/* =======================
+ * Angular
+ * ======================= */
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -9,18 +12,22 @@ import {
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
+/* =======================
+ * Ionic
+ * ======================= */
 import {
   AlertController,
   IonButton,
-  IonChip,
   IonContent,
   IonIcon,
   IonInput,
-  IonLabel,
   IonSelect,
   IonSelectOption,
 } from '@ionic/angular/standalone';
 
+/* =======================
+ * Ionicons
+ * ======================= */
 import { addIcons } from 'ionicons';
 import {
   addCircleOutline,
@@ -53,6 +60,7 @@ import { TaskItemComponent } from '../components/task-item/task-item.component';
 import { StatsSummaryComponent } from '../components/stats-summary/stats-summary.component';
 import { TasksHeaderComponent } from '../components/tasks-header/tasks-header.component';
 import { CategoryManagementComponent } from '../components/category-management/category-management.component';
+import { TasksFilterComponent } from '../components/tasks-filter/tasks-filter.component';
 
 @Component({
   selector: 'app-task-list',
@@ -65,13 +73,12 @@ import { CategoryManagementComponent } from '../components/category-management/c
     StatsSummaryComponent,
     TasksHeaderComponent,
     CategoryManagementComponent,
+    TasksFilterComponent,
 
     IonButton,
-    IonChip,
     IonContent,
     IonIcon,
     IonInput,
-    IonLabel,
     IonSelect,
     IonSelectOption,
   ],
@@ -99,17 +106,23 @@ export class TaskListComponent implements OnInit {
     validators: [Validators.required],
   });
 
-  readonly filteredTasks = computed(() => {
+  readonly vm = computed(() => {
+    const tasks = this.tasks();
     const filter = this.selectedCategoryFilter();
-    return filter ? this.tasks().filter((t) => t.categoryId === filter) : this.tasks();
+
+    const filtered = filter ? tasks.filter((t) => t.categoryId === filter) : tasks;
+
+    const completed = filtered.filter((t) => t.completed);
+    const pending = filtered.filter((t) => !t.completed);
+
+    return {
+      filtered,
+      completed,
+      pending,
+      completedCount: completed.length,
+      pendingCount: pending.length,
+    };
   });
-
-  readonly completedTasks = computed(() => this.filteredTasks().filter((t) => t.completed));
-
-  readonly pendingTasks = computed(() => this.filteredTasks().filter((t) => !t.completed));
-
-  readonly completedCount = computed(() => this.completedTasks().length);
-  readonly pendingCount = computed(() => this.pendingTasks().length);
 
   ngOnInit(): void {
     this.initializeIcons();
@@ -145,16 +158,8 @@ export class TaskListComponent implements OnInit {
     this.taskService.clearCompleted();
   }
 
-  filterByCategory(categoryId: string): void {
+  onFilterChange(categoryId: string | null): void {
     this.selectedCategoryFilter.set(categoryId);
-  }
-
-  clearFilter(): void {
-    this.selectedCategoryFilter.set(null);
-  }
-
-  isFilterActive(categoryId: string): boolean {
-    return this.selectedCategoryFilter() === categoryId;
   }
 
   createCategory(data: { name: string; color: string }): void {
@@ -188,7 +193,7 @@ export class TaskListComponent implements OnInit {
 
   deleteCategory(categoryId: string): void {
     if (this.selectedCategoryFilter() === categoryId) {
-      this.clearFilter();
+      this.onFilterChange(null);
     }
     this.categoryService.deleteCategory(categoryId);
   }
@@ -201,12 +206,12 @@ export class TaskListComponent implements OnInit {
     return category.id;
   }
 
-  getCategoryById(categoryId: string) {
-    return this.categories().find((c) => c.id === categoryId);
-  }
-
   private resetTaskControl(): void {
     this.taskControl.reset('');
+  }
+
+  getCategoryById(categoryId: string) {
+    return this.categories().find((c) => c.id === categoryId);
   }
 
   private getTaskCountByCategory(categoryId: string): number {
