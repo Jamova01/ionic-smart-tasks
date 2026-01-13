@@ -1,0 +1,39 @@
+<div class="tasks-section" [class.completed-section]="variant() === 'completed'">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="section-title-wrapper">
+      <div
+        class="section-icon"
+        [class.pending-icon]="variant() === 'pending'"
+        [class.completed-icon]="variant() === 'completed'"
+      >
+        <ion-icon [name]="icon()"></ion-icon>
+      </div>
+      <div>
+        <h3 class="section-title-main">{{ title() }}</h3>
+        <p class="section-subtitle">
+          {{ subtitle() }}
+        </p>
+      </div>
+    </div>
+    @if (showAction()) {
+    <ion-button fill="clear" size="small" (click)="action.emit()" class="clear-all-btn">
+      <ion-icon slot="start" [name]="actionIcon()"></ion-icon>
+      {{ actionLabel() }}
+    </ion-button>
+    }
+  </div>
+  <!-- Tasks Grid -->
+  <div class="tasks-grid">
+    @for (task of tasks(); track task.id) {
+    <app-task-item
+      [task]="task"
+      [variant]="variant()"
+      [categoryName]="getCategoryName(task.categoryId)"
+      [categoryColor]="getCategoryColor(task.categoryId)"
+      (toggle)="toggle.emit($event)"
+      (remove)="remove.emit($event)"
+    />
+    }
+  </div>
+</div>

@@ -1,0 +1,110 @@
+@use 'theme' as *;
+
+/* =====================================================
+   Tasks Section
+===================================================== */
+
+.tasks-section {
+  margin-bottom: $spacing-xl;
+}
+
+/* =====================================================
+   Section Header
+===================================================== */
+
+.section-header {
+  @include flex-center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.section-title-wrapper {
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+/* =====================================================
+   Section Icon
+===================================================== */
+
+.section-icon {
+  @include flex-center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  &.pending-icon {
+    background: linear-gradient(135deg, rgba(253, 218, 36, 0.15), rgba(253, 218, 36, 0.05));
+
+    ion-icon {
+      color: #dfc020;
+    }
+  }
+
+  &.completed-icon {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+
+    ion-icon {
+      color: var(--ion-color-success);
+    }
+  }
+}
+
+/* =====================================================
+   Titles
+===================================================== */
+
+.section-title-main {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+.section-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
+
+/* =====================================================
+   Actions
+===================================================== */
+
+.clear-all-btn {
+  --color: var(--ion-color-danger);
+  text-transform: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* =====================================================
+   Tasks Grid
+===================================================== */
+
+.tasks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+/* =====================================================
+   Responsive
+===================================================== */
+
+@media (max-width: 576px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  .clear-all-btn {
+    align-self: flex-end;
+  }
+}
