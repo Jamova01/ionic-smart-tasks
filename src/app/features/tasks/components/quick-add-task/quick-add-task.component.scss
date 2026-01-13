@@ -1,0 +1,109 @@
+@use 'theme' as *;
+
+/* =====================================================
+   Quick Add Task
+===================================================== */
+.quick-add-section {
+  margin-bottom: $spacing-xl;
+}
+
+/* Title */
+.section-title {
+  @include flex-center;
+  gap: $spacing-xs;
+  margin: 0 0 $spacing-md;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+/* Card */
+.quick-add-card {
+  @include card-base;
+  padding: $spacing-lg;
+}
+
+/* Inputs layout */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.input-wrapper,
+.category-selector {
+  @include flex-center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    background: white;
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 4px rgba(0, 72, 132, 0.1);
+  }
+}
+
+.input-icon {
+  font-size: 20px;
+  color: var(--ion-color-medium);
+  flex-shrink: 0;
+}
+
+.task-input,
+.category-select {
+  --padding-start: 0;
+  --padding-end: 0;
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Action button */
+.add-task-button {
+  --background: #{$primary-gradient};
+  --border-radius: 12px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.3px;
+
+  &:hover:not([disabled]) {
+    --background: linear-gradient(
+      135deg,
+      var(--ion-color-primary-shade) 0%,
+      var(--ion-color-primary) 100%
+    );
+  }
+}
+
+/* =====================================================
+   Responsive
+===================================================== */
+@media (min-width: 768px) {
+  .quick-add-card {
+    padding: $spacing-xl;
+  }
+
+  .input-group {
+    flex-direction: row;
+  }
+
+  .input-wrapper {
+    flex: 2;
+  }
+
+  .category-selector {
+    flex: 1;
+  }
+}

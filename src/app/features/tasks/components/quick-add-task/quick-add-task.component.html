@@ -1,0 +1,47 @@
+<div class="quick-add-section">
+  <h2 class="section-title">
+    <ion-icon name="add-circle-outline"></ion-icon>
+    Quick Add
+  </h2>
+
+  <div class="quick-add-card">
+    <div class="input-group">
+      <div class="input-wrapper">
+        <ion-icon name="create-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="What needs to be done?"
+          [formControl]="taskControl"
+          (keyup.enter)="submit()"
+          class="task-input"
+        ></ion-input>
+      </div>
+
+      <div class="category-selector">
+        <ion-icon name="pricetag-outline" class="input-icon"></ion-icon>
+        <ion-select
+          interface="action-sheet"
+          placeholder="Category"
+          [formControl]="categoryControl"
+          class="category-select"
+        >
+          @for (category of categories(); track category.id) {
+          <ion-select-option [value]="category.id">
+            {{ category.name }}
+          </ion-select-option>
+          }
+        </ion-select>
+      </div>
+    </div>
+
+    <ion-button
+      expand="block"
+      (click)="submit()"
+      [disabled]="taskControl.invalid"
+      class="add-task-button"
+    >
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Add Task
+    </ion-button>
+  </div>
+</div>
