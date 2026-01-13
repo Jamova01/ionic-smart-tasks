@@ -36,7 +36,6 @@
     <!-- Tasks Display -->
     <div class="tasks-container">
       @if (vm().filtered.length === 0) {
-      <!-- EMPTY STATE -->
       <div class="empty-state">
         <div class="empty-illustration">
           <ion-icon name="checkmark-done-outline"></ion-icon>
@@ -61,74 +60,36 @@
         </ion-button>
         }
       </div>
-      } @else {
-      <!-- PENDING TASKS -->
-      @if (vm().pending.length > 0) {
-      <div class="tasks-section">
-        <div class="section-header">
-          <div class="section-title-wrapper">
-            <div class="section-icon pending-icon">
-              <ion-icon name="hourglass-outline"></ion-icon>
-            </div>
-            <div>
-              <h3 class="section-title-main">In Progress</h3>
-              <p class="section-subtitle">
-                {{ vm().pending.length }} task{{ vm().pending.length !== 1 ? 's' : '' }} to complete
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="tasks-grid">
-          @for (task of vm().pending; track task.id) {
-          <app-task-item
-            [task]="task"
-            variant="pending"
-            [categoryName]="getCategoryById(task.categoryId)?.name"
-            [categoryColor]="getCategoryById(task.categoryId)?.color"
-            (toggle)="toggleTask($event)"
-            (remove)="deleteTask($event)"
-          />
-          }
-        </div>
-      </div>
-      }
-
-      <!-- COMPLETED TASKS -->
-      @if (vm().completed.length > 0) {
-      <div class="tasks-section completed-section">
-        <div class="section-header">
-          <div class="section-title-wrapper">
-            <div class="section-icon completed-icon">
-              <ion-icon name="checkmark-done-outline"></ion-icon>
-            </div>
-            <div>
-              <h3 class="section-title-main">Completed</h3>
-              <p class="section-subtitle">
-                {{ vm().completed.length }} task{{ vm().completed.length !== 1 ? 's' : '' }} done
-              </p>
-            </div>
-          </div>
-
-          <ion-button fill="clear" size="small" (click)="clearCompleted()" class="clear-all-btn">
-            <ion-icon slot="start" name="trash-outline"></ion-icon>
-            Clear All
-          </ion-button>
-        </div>
-
-        <div class="tasks-grid">
-          @for (task of vm().completed; track task.id) {
-          <app-task-item
-            [task]="task"
-            variant="completed"
-            [categoryName]="getCategoryById(task.categoryId)?.name"
-            [categoryColor]="getCategoryById(task.categoryId)?.color"
-            (toggle)="toggleTask($event)"
-            (remove)="deleteTask($event)"
-          />
-          }
-        </div>
-      </div>
+      } @else { @if (vm().pending.length > 0) {
+      <app-tasks-section
+        variant="pending"
+        icon="hourglass-outline"
+        [title]="'In Progress'"
+        [subtitle]="
+          vm().pending.length + ' task' + (vm().pending.length !== 1 ? 's' : '') + ' to complete'
+        "
+        [tasks]="vm().pending"
+        [categories]="categories()"
+        (toggle)="toggleTask($event)"
+        (remove)="deleteTask($event)"
+      />
+      } @if (vm().completed.length > 0) {
+      <app-tasks-section
+        variant="completed"
+        icon="checkmark-done-outline"
+        [title]="'Completed'"
+        [subtitle]="
+          vm().completed.length + ' task' + (vm().completed.length !== 1 ? 's' : '') + ' done'
+        "
+        [tasks]="vm().completed"
+        [categories]="categories()"
+        [showAction]="true"
+        actionIcon="trash-outline"
+        [actionLabel]="'Clear All'"
+        (action)="clearCompleted()"
+        (toggle)="toggleTask($event)"
+        (remove)="deleteTask($event)"
+      />
       } }
     </div>
   </div>
