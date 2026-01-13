@@ -1,66 +1,26 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { AlertController, IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-
-/* =======================
- * Ionicons
- * ======================= */
-import { addIcons } from 'ionicons';
-import {
-  addCircleOutline,
-  addOutline,
-  arrowForward,
-  briefcaseOutline,
-  checkmarkCircleOutline,
-  checkmarkDoneOutline,
-  chevronDownOutline,
-  chevronUpOutline,
-  clipboardOutline,
-  closeOutline,
-  colorPaletteOutline,
-  createOutline,
-  eyeOutline,
-  funnelOutline,
-  hourglassOutline,
-  listOutline,
-  pricetagOutline,
-  timeOutline,
-  trashOutline,
-} from 'ionicons/icons';
-
 import { TaskService } from '../services/task.service';
 import { CategoryService } from '../services/category.service';
-
-import { Task } from '../../../core/models/task.model';
-
-import { TaskItemComponent } from '../components/task-item/task-item.component';
 import { StatsSummaryComponent } from '../components/stats-summary/stats-summary.component';
 import { TasksHeaderComponent } from '../components/tasks-header/tasks-header.component';
 import { CategoryManagementComponent } from '../components/category-management/category-management.component';
 import { TasksFilterComponent } from '../components/tasks-filter/tasks-filter.component';
 import { QuickAddTaskComponent } from '../components/quick-add-task/quick-add-task.component';
+import { TasksSectionComponent } from '../components/tasks-section/tasks-section.component';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
   imports: [
     CommonModule,
-
-    TaskItemComponent,
     StatsSummaryComponent,
     TasksHeaderComponent,
     CategoryManagementComponent,
     TasksFilterComponent,
     QuickAddTaskComponent,
-
+    TasksSectionComponent,
     IonButton,
     IonContent,
     IonIcon,
@@ -69,22 +29,19 @@ import { QuickAddTaskComponent } from '../components/quick-add-task/quick-add-ta
   styleUrls: ['./task-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent {
   private readonly taskService = inject(TaskService);
   private readonly categoryService = inject(CategoryService);
   private readonly alertController = inject(AlertController);
 
   readonly tasks = this.taskService.tasks;
   readonly categories = this.categoryService.categories;
-
   readonly selectedCategoryFilter = signal<string | null>(null);
 
   readonly vm = computed(() => {
     const tasks = this.tasks();
     const filter = this.selectedCategoryFilter();
-
     const filtered = filter ? tasks.filter((t) => t.categoryId === filter) : tasks;
-
     const completed = filtered.filter((t) => t.completed);
     const pending = filtered.filter((t) => !t.completed);
 
@@ -94,12 +51,18 @@ export class TaskListComponent implements OnInit {
       pending,
       completedCount: completed.length,
       pendingCount: pending.length,
+      hasNoTasks: filtered.length === 0,
+      hasPendingTasks: pending.length > 0,
+      hasCompletedTasks: completed.length > 0,
+      pendingSubtitle: this.buildTaskSubtitle(pending.length, 'to complete'),
+      completedSubtitle: this.buildTaskSubtitle(completed.length, 'done'),
     };
   });
 
-  ngOnInit(): void {
-    this.initializeIcons();
-  }
+  readonly selectedCategory = computed(() => {
+    const categoryId = this.selectedCategoryFilter();
+    return categoryId ? this.getCategoryById(categoryId) : null;
+  });
 
   onCreateTask(data: { title: string; categoryId: string }): void {
     this.taskService.addTask(data.title, data.categoryId);
@@ -129,14 +92,11 @@ export class TaskListComponent implements OnInit {
     const category = this.getCategoryById(categoryId);
     const count = this.getTaskCountByCategory(categoryId);
 
+    if (!category) return;
+
     const alert = await this.alertController.create({
       header: 'Delete Category',
-      message:
-        count > 0
-          ? `Are you sure you want to delete "${
-              category?.name
-            }"? This will also delete ${count} task${count !== 1 ? 's' : ''}.`
-          : `Are you sure you want to delete "${category?.name}"?`,
+      message: this.buildDeleteCategoryMessage(category.name, count),
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         {
@@ -157,14 +117,6 @@ export class TaskListComponent implements OnInit {
     this.categoryService.deleteCategory(categoryId);
   }
 
-  trackById(_: number, task: Task): string {
-    return task.id;
-  }
-
-  trackByCategoryId(_: number, category: { id: string }): string {
-    return category.id;
-  }
-
   getCategoryById(categoryId: string) {
     return this.categories().find((c) => c.id === categoryId);
   }
@@ -173,27 +125,16 @@ export class TaskListComponent implements OnInit {
     return this.tasks().filter((t) => t.categoryId === categoryId).length;
   }
 
-  private initializeIcons(): void {
-    addIcons({
-      'add-circle-outline': addCircleOutline,
-      'add-outline': addOutline,
-      'arrow-forward': arrowForward,
-      'briefcase-outline': briefcaseOutline,
-      'checkmark-circle-outline': checkmarkCircleOutline,
-      'checkmark-done-outline': checkmarkDoneOutline,
-      'chevron-down-outline': chevronDownOutline,
-      'chevron-up-outline': chevronUpOutline,
-      'clipboard-outline': clipboardOutline,
-      'close-outline': closeOutline,
-      'color-palette-outline': colorPaletteOutline,
-      'create-outline': createOutline,
-      'eye-outline': eyeOutline,
-      'funnel-outline': funnelOutline,
-      'hourglass-outline': hourglassOutline,
-      'list-outline': listOutline,
-      'pricetag-outline': pricetagOutline,
-      'time-outline': timeOutline,
-      'trash-outline': trashOutline,
-    });
+  private buildTaskSubtitle(count: number, suffix: string): string {
+    const plural = count !== 1 ? 's' : '';
+    return `${count} task${plural} ${suffix}`;
+  }
+
+  private buildDeleteCategoryMessage(categoryName: string, taskCount: number): string {
+    const baseMessage = `Are you sure you want to delete "${categoryName}"?`;
+    if (taskCount === 0) return baseMessage;
+
+    const plural = taskCount !== 1 ? 's' : '';
+    return `${baseMessage} This will also delete ${taskCount} task${plural}.`;
   }
 }
