@@ -1,0 +1,146 @@
+<div class="category-management-section">
+  <div class="section-header-with-action">
+    <h2 class="section-title">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      Categories
+    </h2>
+    <ion-button fill="solid" size="small" (click)="toggleForm()" class="toggle-form-btn">
+      <ion-icon slot="start" [name]="showForm() ? 'chevron-up-outline' : 'add-outline'"></ion-icon>
+      {{ showForm() ? 'Hide Form' : 'New Category' }}
+    </ion-button>
+  </div>
+
+  <!-- Inline Category Creation Form -->
+  @if (showForm()) {
+  <div class="category-form-card">
+    <h3 class="form-title">
+      <ion-icon name="create-outline"></ion-icon>
+      Create New Category
+    </h3>
+
+    <div class="form-content">
+      <!-- Category Name -->
+      <div class="form-row">
+        <label class="form-label">
+          <ion-icon name="pricetag-outline"></ion-icon>
+          Category Name
+        </label>
+        <div class="input-wrapper-inline">
+          <ion-input
+            type="text"
+            placeholder="e.g., Work, Personal, Shopping"
+            [formControl]="nameControl"
+            class="category-name-input"
+          ></ion-input>
+        </div>
+        @if (nameControl.invalid && nameControl.touched) {
+        <p class="error-message">Category name must be at least 2 characters</p>
+        }
+      </div>
+
+      <!-- Color Picker -->
+      <div class="form-row">
+        <label class="form-label">
+          <ion-icon name="color-palette-outline"></ion-icon>
+          Color
+        </label>
+
+        <div class="color-picker-inline">
+          @for (color of predefinedColors; track color) {
+          <button
+            type="button"
+            class="color-dot"
+            [class.selected]="colorControl.value === color"
+            [style.background]="color"
+            (click)="selectColor(color)"
+            aria-label="Select color {{ color }}"
+          >
+            @if (colorControl.value === color) {
+            <ion-icon name="checkmark-outline"></ion-icon>
+            }
+          </button>
+          }
+
+          <input
+            type="color"
+            [formControl]="colorControl"
+            class="color-input-inline"
+            title="Custom color"
+            aria-label="Pick custom color"
+          />
+        </div>
+      </div>
+
+      <!-- Preview & Actions -->
+      <div class="form-row form-actions">
+        <div class="preview-inline">
+          <span class="preview-label">Preview:</span>
+          <ion-chip class="preview-chip-inline" [style.--chip-color]="colorControl.value">
+            <ion-icon name="pricetag-outline"></ion-icon>
+            <ion-label>{{ nameControl.value || 'Category Name' }}</ion-label>
+          </ion-chip>
+        </div>
+        <div class="action-buttons">
+          <ion-button size="small" fill="outline" (click)="toggleForm()" class="cancel-btn-inline">
+            Cancel
+          </ion-button>
+          <ion-button
+            size="small"
+            (click)="submit()"
+            [disabled]="nameControl.invalid"
+            class="create-btn-inline"
+          >
+            <ion-icon slot="start" name="add-outline"></ion-icon>
+            Create
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Categories Grid -->
+  <div class="categories-management-grid">
+    @for (category of categories(); track category.id) {
+    <div
+      class="category-card"
+      [class.active]="isActive(category.id)"
+      [style.--category-color]="category.color"
+    >
+      <div class="category-info">
+        <div class="category-icon-wrapper">
+          <ion-icon name="pricetag-outline"></ion-icon>
+        </div>
+
+        <div class="category-details">
+          <h4 class="category-name">{{ category.name }}</h4>
+          <p class="category-task-count">
+            {{ taskCount(category.id) }} task{{ taskCount(category.id) !== 1 ? 's' : '' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="category-actions">
+        <ion-button
+          fill="clear"
+          size="small"
+          (click)="filter.emit(category.id)"
+          class="category-action-btn"
+        >
+          <ion-icon slot="icon-only" name="funnel-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          fill="clear"
+          size="small"
+          color="danger"
+          (click)="delete.emit(category.id)"
+          class="category-action-btn delete-btn"
+        >
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+    }
+  </div>
+</div>

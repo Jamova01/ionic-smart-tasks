@@ -1,0 +1,354 @@
+@use 'theme' as *;
+
+/* =====================================================
+   Category Management Section
+===================================================== */
+.category-management-section {
+  margin-bottom: $spacing-xl;
+}
+
+.section-header-with-action {
+  @include flex-center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.toggle-form-btn {
+  --background: #{$primary-gradient};
+  --border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    --background: linear-gradient(
+      135deg,
+      var(--ion-color-primary-shade) 0%,
+      var(--ion-color-primary) 100%
+    );
+  }
+}
+
+/* Inline Category Form */
+.category-form-card {
+  @include card-base;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-title {
+  @include flex-center;
+  gap: $spacing-xs;
+  margin: 0 0 $spacing-lg;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.form-label {
+  @include flex-center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+
+  ion-icon {
+    font-size: 16px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.input-wrapper-inline {
+  @include flex-center;
+  padding: $spacing-sm $spacing-md;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    background: white;
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 4px rgba(0, 72, 132, 0.1);
+  }
+}
+
+.category-name-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.error-message {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--ion-color-danger);
+  font-weight: 500;
+}
+
+/* Color Picker Inline */
+.color-picker-inline {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 3px solid transparent;
+  @include flex-center;
+  justify-content: center;
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &.selected {
+    border-color: white;
+    box-shadow: 0 0 0 2px var(--ion-color-primary), 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.15);
+
+    ion-icon {
+      font-size: 20px;
+      color: white;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+  }
+}
+
+.color-input-inline {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  &::-webkit-color-swatch {
+    border: 3px solid #dee2e6;
+    border-radius: 50%;
+  }
+
+  &:hover::-webkit-color-swatch {
+    border-color: var(--ion-color-primary);
+  }
+}
+
+/* Preview & Actions */
+.form-actions {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  margin-top: $spacing-sm;
+  padding-top: $spacing-md;
+  border-top: 1px solid #e9ecef;
+}
+
+.preview-inline {
+  @include flex-center;
+  gap: $spacing-sm;
+  flex: 1;
+
+  .preview-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-color-medium);
+  }
+}
+
+.preview-chip-inline {
+  --background: var(--chip-color);
+  --color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  ion-icon {
+    color: white;
+    font-size: 18px;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.cancel-btn-inline {
+  --border-radius: 10px;
+  --border-color: var(--ion-color-medium);
+  --color: var(--ion-color-medium);
+  font-weight: 600;
+  text-transform: none;
+}
+
+.create-btn-inline {
+  --background: #{$primary-gradient};
+  --border-radius: 10px;
+  font-weight: 600;
+  text-transform: none;
+
+  &:hover:not([disabled]) {
+    --background: linear-gradient(
+      135deg,
+      var(--ion-color-primary-shade) 0%,
+      var(--ion-color-primary) 100%
+    );
+  }
+}
+
+/* Categories Grid */
+.categories-management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $spacing-md;
+}
+
+.category-card {
+  @include card-base;
+  padding: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--category-color);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $card-shadow-hover;
+  }
+}
+
+.category-info {
+  @include flex-center;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
+}
+
+.category-icon-wrapper {
+  @include flex-center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--category-color) 15%, transparent),
+    color-mix(in srgb, var(--category-color) 5%, transparent)
+  );
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--category-color);
+  }
+}
+
+.category-details {
+  flex: 1;
+  min-width: 0;
+
+  .category-name {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .category-task-count {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+  }
+}
+
+.category-actions {
+  @include flex-center;
+  gap: 4px;
+}
+
+.category-action-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &.delete-btn {
+    --color: var(--ion-color-danger);
+  }
+}
+
+/* =====================================================
+   Section Title (Shared)
+===================================================== */
+.section-title {
+  @include flex-center;
+  gap: $spacing-xs;
+  margin: 0 0 $spacing-md;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+}
